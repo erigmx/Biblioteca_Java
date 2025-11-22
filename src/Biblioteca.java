@@ -1,11 +1,8 @@
 package src;
+import java.util.*;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+public class Biblioteca{
 
-public class Biblioteca {
     private Map<String, Set<Livro>> bibliotecaLivros;
     private Set<String> titulosDuplicados;
 
@@ -14,10 +11,16 @@ public class Biblioteca {
         this.titulosDuplicados = new HashSet<>();
     }
 
-    public void adicionarLivro(Livro livro){
+    public void adicionarLivro(Livro livro) throws LivroDuplicadoException{
      if(livro == null){
-         //exceção de livro nulo
+         throw new LivroDuplicadoException("O livro não pode ser nulo");
      }
+
+        if (titulosDuplicados.contains(livro.getTitulo())) {
+            throw new LivroDuplicadoException(
+                    "Já existe um livro cadastrado com o título: " + livro.getTitulo()
+            );
+        }
 
      String nomeAutor = livro.getAutor();
 
@@ -28,6 +31,7 @@ public class Biblioteca {
 
      //adiciona o livro na biblioteca do autor
      bibliotecaLivros.get(nomeAutor).add(livro);
+
      titulosDuplicados.add(livro.getTitulo());
     }
 
@@ -48,4 +52,20 @@ public class Biblioteca {
         System.out.println("Livro, " + titulo + ", não encontrado");
         return null;
     }
+
+    public List<Livro> listarLivrosPorAutor(String autor) {
+        if (autor == null || autor.trim().isEmpty()) {
+            System.out.println("Nome do autor inválido");
+            return new ArrayList<>();
+        }
+
+        if (!bibliotecaLivros.containsKey(autor)) {
+            System.out.println("Autor não encontrado: " + autor);
+            return new ArrayList<>();
+        }
+
+        Set<Livro> livrosDoAutor = bibliotecaLivros.get(autor);
+        return new ArrayList<>(livrosDoAutor);
+    }
+
 }
